@@ -9,6 +9,7 @@ class Users(Base):
     email: Mapped[str] = mapped_column(String(255, 'SQL_Latin1_General_CP1_CI_AS'), nullable=False)
     name: Mapped[str] = mapped_column(Unicode(255, 'SQL_Latin1_General_CP1_CI_AS'), nullable=False)
     role: Mapped[str] = mapped_column(String(50, 'SQL_Latin1_General_CP1_CI_AS'), nullable=False)
+    hashed_password: Mapped[Optional[str]] = mapped_column(String(255, "SQL_Latin1_General_CP1_CI_AS"), nullable=True)
     created_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, server_default=text('(getdate())'))
 
     events: Mapped[list['Events']] = relationship('Events', back_populates='users')

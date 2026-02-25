@@ -11,6 +11,10 @@ pyodbc==5.1.0                # Sync ODBC driver (dùng khi cần)
 pydantic==2.9.0
 pydantic-settings==2.5.0     # Đọc config từ .env file
 
+# ===== Authentication =====
+python-jose[cryptography]==3.3.0   # JWT encode/decode
+passlib[bcrypt]==1.7.4             # Password hashing (bcrypt)
+
 # ===== SVG to PDF Conversion =====
 cairosvg==2.7.1              # Convert SVG -> PDF/PNG
 

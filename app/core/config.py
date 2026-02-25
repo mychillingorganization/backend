@@ -28,5 +28,11 @@ class Settings(BaseSettings):
     GOOGLE_SERVICE_ACCOUNT_FILE: str = Field(default="credentials/service_account.json")
     GMAIL_SENDER_EMAIL: str = Field(...)
 
+    # ── JWT Authentication ─────────────────────────────────────
+    JWT_SECRET_KEY: str = Field(...)          # openssl rand -hex 32
+    JWT_ALGORITHM: str = Field(default="HS256")
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60)
+    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7)
+
 # Singleton instance — import và dùng ở khắp nơi
 settings = Settings()
