@@ -11,8 +11,16 @@ Flow:
 from typing import AsyncGenerator
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from jose import JWTError
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from app.core.security import decode_token
+from app.core.exceptions import UnauthorizedException
+from app.services.auth_service import AuthService
 
 from app.core.database import AsyncSessionFactory
+
+# ── Auth bearer scheme ────────────────────────────────────────────────────────
+bearer_scheme = HTTPBearer()
 
 # ── Repositories ─────────────────────────────────────────────────────────────
 from app.repositories.user_repository import UserRepository
@@ -28,7 +36,6 @@ from app.services.template_service import TemplateService
 from app.services.generation_log_service import GenerationLogService
 from app.services.svg_service import SvgService
 from app.services.pdf_service import PdfService
-from app.services.gemini_service import GeminiService
 from app.services.google_sheets_service import GoogleSheetsService
 from app.services.google_drive_service import GoogleDriveService
 from app.services.gmail_service import GmailService
@@ -154,7 +161,6 @@ def get_generation_log_service(
     template_repo: TemplateRepository = Depends(get_template_repository),
     svg_service: SvgService = Depends(get_svg_service),
     pdf_service: PdfService = Depends(get_pdf_service),
-    gemini_service: GeminiService = Depends(get_gemini_service),
     sheets_service: GoogleSheetsService = Depends(get_google_sheets_service),
     drive_service: GoogleDriveService = Depends(get_google_drive_service),
     gmail_service: GmailService = Depends(get_gmail_service),
@@ -165,7 +171,6 @@ def get_generation_log_service(
         template_repo=template_repo,
         svg_service=svg_service,
         pdf_service=pdf_service,
-        gemini_service=gemini_service,
         sheets_service=sheets_service,
         drive_service=drive_service,
         gmail_service=gmail_service,
