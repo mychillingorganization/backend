@@ -1,0 +1,36 @@
+# ===== Web Framework =====
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+
+# ===== Database (Database First - SQL Server) =====
+sqlalchemy==2.0.36           # ORM, hỗ trợ async
+aioodbc==0.5.0               # Async ODBC driver cho SQL Server
+pyodbc==5.1.0                # Sync ODBC driver (dùng khi cần)
+
+# ===== Data Validation =====
+pydantic==2.9.0
+pydantic-settings==2.5.0     # Đọc config từ .env file
+
+# ===== SVG to PDF Conversion =====
+cairosvg==2.7.1              # Convert SVG -> PDF/PNG
+
+# ===== Google APIs =====
+google-auth==2.35.0
+google-auth-httplib2==0.2.0
+google-api-python-client==2.149.0   # Sheets, Drive, Gmail APIs
+
+# ===== XML/SVG Parsing =====
+lxml==5.3.0                  # Parse & manipulate SVG XML
+
+# ===== HTTP Client =====
+httpx==0.27.0                # Async HTTP client
+
+# ===== Background Tasks (nếu dùng Celery thay BackgroundTasks) =====
+# celery==5.4.0
+# redis==5.1.0
+
+# ===== Dev & Testing =====
+pytest==8.3.0
+pytest-asyncio==0.24.0
+httpx==0.27.0                # Test client cho FastAPI
+python-multipart==0.0.12     # Upload file support
