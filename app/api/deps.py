@@ -26,22 +26,23 @@ bearer_scheme = HTTPBearer()
 
 # ── Repositories ─────────────────────────────────────────────────────────────
 from app.repositories.user_repository import UserRepository
-# from app.repositories.event_repository import EventRepository
+from app.repositories.event_repository import EventRepository
 # from app.repositories.template_repository import TemplateRepository
 # from app.repositories.generation_log_repository import GenerationLogRepository
-# from app.repositories.generated_asset_repository import GeneratedAssetRepository
+from app.repositories.generated_asset_repository import GeneratedAssetRepository
 
 # ── Services ──────────────────────────────────────────────────────────────────
 # from app.services.user_service import UserService
 from app.services.auth_service import AuthService
-# from app.services.event_service import EventService
+from app.services.event_service import EventService
 # from app.services.template_service import TemplateService
 # from app.services.generation_log_service import GenerationLogService
 # from app.services.svg_service import SvgService
 # from app.services.pdf_service import PdfService
 # from app.services.google_sheets_service import GoogleSheetsService
 # from app.services.google_drive_service import GoogleDriveService
-# from app.services.gmail_service import GmailService
+from app.services.gmail_service import GmailService
+from app.services.generated_asset_service import GeneratedAssetService
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -75,10 +76,10 @@ def get_user_repository(
     return UserRepository(db)
 
 
-# def get_event_repository(
-#     db: AsyncSession = Depends(get_db),
-# ) -> EventRepository:
-#     return EventRepository(db)
+def get_event_repository(
+    db: AsyncSession = Depends(get_db),
+) -> EventRepository:
+    return EventRepository(db)
 
 
 # def get_template_repository(
@@ -91,6 +92,12 @@ def get_user_repository(
 #     db: AsyncSession = Depends(get_db),
 # ) -> GenerationLogRepository:
 #     return GenerationLogRepository(db)
+
+
+def get_generated_asset_repository(
+    db: AsyncSession = Depends(get_db),
+) -> GeneratedAssetRepository:
+    return GeneratedAssetRepository(db)
 
 
 # def get_generated_asset_repository(
@@ -142,13 +149,23 @@ def get_user_repository(
 #     return UserService(user_repo)
 
 
-# def get_event_service(
-#     event_repo: EventRepository = Depends(get_event_repository),
-#     user_repo: UserRepository = Depends(get_user_repository),
-# ) -> EventService:
-#     """EventService cần user_repo để validate created_by tồn tại."""
-#     return EventService(event_repo, user_repo)
+def get_event_service(
+    event_repo: EventRepository = Depends(get_event_repository),
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> EventService:
+    """EventService cần user_repo để validate created_by tồn tại."""
+    return EventService(event_repo, user_repo)
 
+def get_gmail_service() -> GmailService:
+    """Stateless service wrap Gmail API."""
+    return GmailService()
+
+
+def get_generated_asset_service(
+    asset_repo: GeneratedAssetRepository = Depends(get_generated_asset_repository),
+    gmail_service: GmailService = Depends(get_gmail_service),
+) -> GeneratedAssetService:
+    return GeneratedAssetService(asset_repo, gmail_service)
 
 # def get_template_service(
 #     template_repo: TemplateRepository = Depends(get_template_repository),
