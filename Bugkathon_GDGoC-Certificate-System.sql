@@ -183,3 +183,37 @@ VALUES
         GETDATE()
     );
 GO
+
+-- ============================================================
+-- SEED: generated_assets (Assets demo cho Bugkathon 2026)
+-- ============================================================
+
+INSERT INTO generated_assets (
+    id,
+    generation_log_id,
+    participant_name,
+    participant_email,
+    drive_file_id,
+    email_status,
+    created_at
+)
+VALUES
+    (
+        'd4000000-0000-0000-0000-000000000001',
+        'c3000000-0000-0000-0000-000000000002', -- template Bugkathon
+        N'Nguyễn Văn A',
+        'vana@example.com',
+        'drive_file_id_001',
+        'SENT',
+        GETDATE()
+    ),
+    (
+        'd4000000-0000-0000-0000-000000000002',
+        'c3000000-0000-0000-0000-000000000002',
+        N'Trần Thị B',
+        'thib@example.com',
+        'drive_file_id_002',
+        'PENDING',
+        GETDATE()
+    );
+GO
