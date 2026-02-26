@@ -1,3 +1,14 @@
+import datetime
+import uuid
+from typing import Optional
+
+from sqlalchemy import Date, DateTime, ForeignKeyConstraint, Index, PrimaryKeyConstraint, Unicode, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as Uuid
+
+from app.models.base import Base
+
+
 class Events(Base):
     __tablename__ = 'events'
     __table_args__ = (
