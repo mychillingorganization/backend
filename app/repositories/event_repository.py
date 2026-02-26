@@ -16,7 +16,9 @@ class EventRepository:
         return result.scalar_one_or_none()
 
     async def get_all(self) -> list[Events]:
-        result = await self._db.execute(select(Events))
+        result = await self._db.execute(
+            select(Events).order_by(Events.created_at.desc())
+        )
         return list(result.scalars().all())
 
     async def create(self, event: Events) -> Events:

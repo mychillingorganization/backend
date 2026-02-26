@@ -87,22 +87,16 @@ def get_template_repository(
     return TemplateRepository(db)
 
 
-# def get_generation_log_repository(
-#     db: AsyncSession = Depends(get_db),
-# ) -> GenerationLogRepository:
-#     return GenerationLogRepository(db)
+def get_generation_log_repository(
+    db: AsyncSession = Depends(get_db),
+) -> GenerationLogRepository:
+    return GenerationLogRepository(db)
 
 
 def get_generated_asset_repository(
     db: AsyncSession = Depends(get_db),
 ) -> GeneratedAssetRepository:
     return GeneratedAssetRepository(db)
-
-
-# def get_generated_asset_repository(
-#     db: AsyncSession = Depends(get_db),
-# ) -> GeneratedAssetRepository:
-#     return GeneratedAssetRepository(db)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -118,19 +112,16 @@ def get_pdf_service() -> PdfService:
     return PdfService()
 
 
-# def get_google_sheets_service() -> GoogleSheetsService:
-#     """GoogleSheetsService đọc danh sách người nhận từ Google Sheets."""
-#     return GoogleSheetsService()
+def get_google_sheets_service() -> GoogleSheetsService:
+    return GoogleSheetsService()
 
 
-# def get_google_drive_service() -> GoogleDriveService:
-#     """GoogleDriveService upload file PDF lên Google Drive."""
-#     return GoogleDriveService()
+def get_google_drive_service() -> GoogleDriveService:
+    return GoogleDriveService()
 
 
-# def get_gmail_service() -> GmailService:
-#     """GmailService gửi email đính kèm certificate."""
-#     return GmailService()
+def get_gmail_service() -> GmailService:
+    return GmailService()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
