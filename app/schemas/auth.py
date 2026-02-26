@@ -21,8 +21,3 @@ class TokenResponse(BaseModel):
 
 class RefreshRequest(BaseModel):
     refresh_token: str
-
-
-class TokenPayload(BaseModel):
-    sub: str       # user_id (UUID string)
-    type: str      # "access" | "refresh"

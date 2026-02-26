@@ -182,43 +182,23 @@ def get_user_repository(
 
 def get_auth_service(
     user_repo: UserRepository = Depends(get_user_repository),
-) -> UserService:
-    return UserService(user_repo)
+) -> AuthService:
+    return AuthService(user_repo)
 
 
-def get_event_service(
-    event_repo: EventRepository = Depends(get_event_repository),
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     user_repo: UserRepository = Depends(get_user_repository),
-) -> EventService:
-    """EventService cần user_repo để validate created_by tồn tại."""
-    return EventService(event_repo, user_repo)
+) -> Users:
+    try:
+        payload = decode_token(credentials.credentials)
+        if payload.get("type") != "access":
+            raise UnauthorizedException("Token không đúng loại.")
+        user_id = uuid.UUID(str(payload["sub"]))
+    except (JWTError, ValueError, KeyError) as exc:
+        raise UnauthorizedException("Token không hợp lệ hoặc đã hết hạn.") from exc
 
-
-def get_template_service(
-    template_repo: TemplateRepository = Depends(get_template_repository),
-    event_repo: EventRepository = Depends(get_event_repository),
-) -> TemplateService:
-    """TemplateService cần event_repo để validate event_id tồn tại."""
-    return TemplateService(template_repo, event_repo)
-
-
-def get_generation_log_service(
-    generation_log_repo: GenerationLogRepository = Depends(get_generation_log_repository),
-    generated_asset_repo: GeneratedAssetRepository = Depends(get_generated_asset_repository),
-    template_repo: TemplateRepository = Depends(get_template_repository),
-    svg_service: SvgService = Depends(get_svg_service),
-    pdf_service: PdfService = Depends(get_pdf_service),
-    sheets_service: GoogleSheetsService = Depends(get_google_sheets_service),
-    drive_service: GoogleDriveService = Depends(get_google_drive_service),
-    gmail_service: GmailService = Depends(get_gmail_service),
-) -> GenerationLogService:
-    return GenerationLogService(
-        generation_log_repo=generation_log_repo,
-        generated_asset_repo=generated_asset_repo,
-        template_repo=template_repo,
-        svg_service=svg_service,
-        pdf_service=pdf_service,
-        sheets_service=sheets_service,
-        drive_service=drive_service,
-        gmail_service=gmail_service,
-    )
+    user = await user_repo.get_by_id(user_id)
+    if not user:
+        raise UnauthorizedException("User không tồn tại.")
+    return user

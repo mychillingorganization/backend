@@ -5,23 +5,19 @@ Security utilities: JWT encode/decode + password hashing.
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
+from jose import jwt
 
 from app.core.config import settings
 
+
 # ── Password Hashing ──────────────────────────────────────────────────────────
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
 def hash_password(plain_password: str) -> str:
-    """Hash mật khẩu plain text → bcrypt string."""
-    return pwd_context.hash(plain_password)
+    return bcrypt.hashpw(plain_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """So sánh plain text với hash đã lưu."""
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 
 # ── JWT ───────────────────────────────────────────────────────────────────────
@@ -33,10 +29,6 @@ def _create_token(data: dict[str, Any], expires_delta: timedelta) -> str:
 
 
 def create_access_token(subject: str, extra: dict[str, Any] | None = None) -> str:
-    """
-    Tạo Access Token (ngắn hạn).
-    subject = user_id (str UUID)
-    """
     data: dict[str, Any] = {"sub": subject, "type": "access"}
     if extra:
         data.update(extra)
@@ -44,7 +36,6 @@ def create_access_token(subject: str, extra: dict[str, Any] | None = None) -> st
 
 
 def create_refresh_token(subject: str) -> str:
-    """Tạo Refresh Token (dài hạn)."""
     data: dict[str, Any] = {"sub": subject, "type": "refresh"}
     return _create_token(data, timedelta(days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS))
 
