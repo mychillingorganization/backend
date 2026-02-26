@@ -1,5 +1,5 @@
-import datetime
 import uuid
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
@@ -13,4 +13,4 @@ class GeneratedAssetResponse(BaseModel):
     participant_email: str
     email_status: str
     drive_file_id: str | None = None
-    created_at: datetime.datetime | None = None
+    created_at: datetime | None = None
