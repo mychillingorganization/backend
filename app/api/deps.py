@@ -34,7 +34,7 @@ from app.repositories.generated_asset_repository import GeneratedAssetRepository
 # ── Services ──────────────────────────────────────────────────────────────────
 # from app.services.user_service import UserService
 from app.services.auth_service import AuthService
-# from app.services.event_service import EventService
+from app.services.event_service import EventService
 from app.services.template_service import TemplateService
 from app.services.generation_log_service import GenerationLogService
 from app.services.svg_service import SvgService
@@ -42,6 +42,7 @@ from app.services.pdf_service import PdfService
 from app.services.google_sheets_service import GoogleSheetsService
 from app.services.google_drive_service import GoogleDriveService
 from app.services.gmail_service import GmailService
+from app.services.generated_asset_service import GeneratedAssetService
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -141,10 +142,6 @@ def get_event_service(
     """EventService cần user_repo để validate created_by tồn tại."""
     return EventService(event_repo, user_repo)
 
-def get_gmail_service() -> GmailService:
-    """Stateless service wrap Gmail API."""
-    return GmailService()
-
 
 def get_generated_asset_service(
     asset_repo: GeneratedAssetRepository = Depends(get_generated_asset_repository),
@@ -156,7 +153,6 @@ def get_template_service(
     template_repo: TemplateRepository = Depends(get_template_repository),
     event_repo: EventRepository = Depends(get_event_repository),
 ) -> TemplateService:
-    """TemplateService cần event_repo để validate event_id tồn tại."""
     return TemplateService(template_repo, event_repo)
 
 

@@ -9,6 +9,12 @@ class GeneratedAssetRepository:
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
 
+    async def get_all(self) -> list[GeneratedAssets]:
+        result = await self._db.execute(
+            select(GeneratedAssets).order_by(GeneratedAssets.created_at.desc())
+        )
+        return list(result.scalars().all())
+
     async def get_by_id(self, asset_id: uuid.UUID) -> GeneratedAssets | None:
         result = await self._db.execute(
             select(GeneratedAssets).where(GeneratedAssets.id == asset_id)

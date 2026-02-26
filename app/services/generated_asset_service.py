@@ -11,6 +11,9 @@ class GeneratedAssetService:
         self.asset_repo = asset_repo
         self.gmail_service = gmail_service
 
+    async def get_all(self) -> list[GeneratedAssets]:
+        return await self.asset_repo.get_all()
+
     async def get_by_id(self, asset_id: uuid.UUID) -> GeneratedAssets:
         asset = await self.asset_repo.get_by_id(asset_id)
         if not asset:

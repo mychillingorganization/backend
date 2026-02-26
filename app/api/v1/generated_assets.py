@@ -1,7 +1,6 @@
 import uuid
-from typing import Any
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 
 from app.api.deps import get_current_user, get_generated_asset_service
 from app.models.user import Users
@@ -9,6 +8,15 @@ from app.schemas.generated_asset import GeneratedAssetResponse
 from app.services.generated_asset_service import GeneratedAssetService
 
 router = APIRouter(prefix="/generated-assets", tags=["GeneratedAssets"])
+
+
+@router.get("", response_model=list[GeneratedAssetResponse])
+async def list_assets(
+    current_user: Users = Depends(get_current_user),
+    asset_service: GeneratedAssetService = Depends(get_generated_asset_service),
+) -> list[GeneratedAssetResponse]:
+    assets = await asset_service.get_all()
+    return [GeneratedAssetResponse.model_validate(a) for a in assets]
 
 
 @router.get("/{asset_id}", response_model=GeneratedAssetResponse)
