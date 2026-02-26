@@ -27,22 +27,21 @@ bearer_scheme = HTTPBearer()
 # ── Repositories ─────────────────────────────────────────────────────────────
 from app.repositories.user_repository import UserRepository
 from app.repositories.event_repository import EventRepository
-# from app.repositories.template_repository import TemplateRepository
-# from app.repositories.generation_log_repository import GenerationLogRepository
+from app.repositories.template_repository import TemplateRepository
+from app.repositories.generation_log_repository import GenerationLogRepository
 from app.repositories.generated_asset_repository import GeneratedAssetRepository
 
 # ── Services ──────────────────────────────────────────────────────────────────
 # from app.services.user_service import UserService
 from app.services.auth_service import AuthService
-from app.services.event_service import EventService
-# from app.services.template_service import TemplateService
-# from app.services.generation_log_service import GenerationLogService
-# from app.services.svg_service import SvgService
-# from app.services.pdf_service import PdfService
-# from app.services.google_sheets_service import GoogleSheetsService
-# from app.services.google_drive_service import GoogleDriveService
+# from app.services.event_service import EventService
+from app.services.template_service import TemplateService
+from app.services.generation_log_service import GenerationLogService
+from app.services.svg_service import SvgService
+from app.services.pdf_service import PdfService
+from app.services.google_sheets_service import GoogleSheetsService
+from app.services.google_drive_service import GoogleDriveService
 from app.services.gmail_service import GmailService
-from app.services.generated_asset_service import GeneratedAssetService
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -82,10 +81,10 @@ def get_event_repository(
     return EventRepository(db)
 
 
-# def get_template_repository(
-#     db: AsyncSession = Depends(get_db),
-# ) -> TemplateRepository:
-#     return TemplateRepository(db)
+def get_template_repository(
+    db: AsyncSession = Depends(get_db),
+) -> TemplateRepository:
+    return TemplateRepository(db)
 
 
 # def get_generation_log_repository(
@@ -111,17 +110,12 @@ def get_generated_asset_repository(
 # Các service này chỉ wrap Google APIs hoặc xử lý file
 # ════════════════════════════==============================
 
-# def get_svg_service() -> SvgService:
-#     """
-#     SvgService chỉ thao tác XML string, không cần DB hay API key.
-#     FastAPI sẽ tạo instance mới mỗi request (nhẹ, không vấn đề gì).
-#     """
-#     return SvgService()
+def get_svg_service() -> SvgService:
+    return SvgService()
 
 
-# def get_pdf_service() -> PdfService:
-#     """PdfService wrap CairoSVG, convert SVG bytes -> PDF bytes."""
-#     return PdfService()
+def get_pdf_service() -> PdfService:
+    return PdfService()
 
 
 # def get_google_sheets_service() -> GoogleSheetsService:
@@ -167,34 +161,36 @@ def get_generated_asset_service(
 ) -> GeneratedAssetService:
     return GeneratedAssetService(asset_repo, gmail_service)
 
-# def get_template_service(
-#     template_repo: TemplateRepository = Depends(get_template_repository),
-#     event_repo: EventRepository = Depends(get_event_repository),
-# ) -> TemplateService:
-#     """TemplateService cần event_repo để validate event_id tồn tại."""
-#     return TemplateService(template_repo, event_repo)
+def get_template_service(
+    template_repo: TemplateRepository = Depends(get_template_repository),
+    event_repo: EventRepository = Depends(get_event_repository),
+) -> TemplateService:
+    """TemplateService cần event_repo để validate event_id tồn tại."""
+    return TemplateService(template_repo, event_repo)
 
 
-# def get_generation_log_service(
-#     generation_log_repo: GenerationLogRepository = Depends(get_generation_log_repository),
-#     generated_asset_repo: GeneratedAssetRepository = Depends(get_generated_asset_repository),
-#     template_repo: TemplateRepository = Depends(get_template_repository),
-#     svg_service: SvgService = Depends(get_svg_service),
-#     pdf_service: PdfService = Depends(get_pdf_service),
-#     sheets_service: GoogleSheetsService = Depends(get_google_sheets_service),
-#     drive_service: GoogleDriveService = Depends(get_google_drive_service),
-#     gmail_service: GmailService = Depends(get_gmail_service),
-# ) -> GenerationLogService:
-#     return GenerationLogService(
-#         generation_log_repo=generation_log_repo,
-#         generated_asset_repo=generated_asset_repo,
-#         template_repo=template_repo,
-#         svg_service=svg_service,
-#         pdf_service=pdf_service,
-#         sheets_service=sheets_service,
-#         drive_service=drive_service,
-#         gmail_service=gmail_service,
-#     )
+def get_generation_log_service(
+    db: AsyncSession = Depends(get_db),
+    log_repo: GenerationLogRepository = Depends(get_generation_log_repository),
+    asset_repo: GeneratedAssetRepository = Depends(get_generated_asset_repository),
+    template_repo: TemplateRepository = Depends(get_template_repository),
+    svg_service: SvgService = Depends(get_svg_service),
+    pdf_service: PdfService = Depends(get_pdf_service),
+    sheets_service: GoogleSheetsService = Depends(get_google_sheets_service),
+    drive_service: GoogleDriveService = Depends(get_google_drive_service),
+    gmail_service: GmailService = Depends(get_gmail_service),
+) -> GenerationLogService:
+    return GenerationLogService(
+        generation_log_repo=log_repo,
+        generated_asset_repo=asset_repo,
+        template_repo=template_repo,
+        svg_service=svg_service,
+        pdf_service=pdf_service,
+        sheets_service=sheets_service,
+        drive_service=drive_service,
+        gmail_service=gmail_service,
+        db=db,
+    )
 
 
 def get_auth_service(

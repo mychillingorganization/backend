@@ -1,9 +1,11 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, events, generated_assets
+from app.api.v1 import auth, generation_log, templates, events, generated_assets
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(auth.router)
+api_router.include_router(templates.router)
+api_router.include_router(generation_log.router)
 
 # include module routers
 # api_router.include_router(users.router)  # not yet implemented
