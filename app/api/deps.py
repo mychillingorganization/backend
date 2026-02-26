@@ -75,10 +75,10 @@ def get_user_repository(
     return UserRepository(db)
 
 
-# def get_event_repository(
-#     db: AsyncSession = Depends(get_db),
-# ) -> EventRepository:
-#     return EventRepository(db)
+def get_event_repository(
+    db: AsyncSession = Depends(get_db),
+) -> EventRepository:
+    return EventRepository(db)
 
 
 def get_template_repository(
@@ -91,6 +91,12 @@ def get_template_repository(
 #     db: AsyncSession = Depends(get_db),
 # ) -> GenerationLogRepository:
 #     return GenerationLogRepository(db)
+
+
+def get_generated_asset_repository(
+    db: AsyncSession = Depends(get_db),
+) -> GeneratedAssetRepository:
+    return GeneratedAssetRepository(db)
 
 
 # def get_generated_asset_repository(
@@ -137,13 +143,23 @@ def get_pdf_service() -> PdfService:
 #     return UserService(user_repo)
 
 
-# def get_event_service(
-#     event_repo: EventRepository = Depends(get_event_repository),
-#     user_repo: UserRepository = Depends(get_user_repository),
-# ) -> EventService:
-#     """EventService cần user_repo để validate created_by tồn tại."""
-#     return EventService(event_repo, user_repo)
+def get_event_service(
+    event_repo: EventRepository = Depends(get_event_repository),
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> EventService:
+    """EventService cần user_repo để validate created_by tồn tại."""
+    return EventService(event_repo, user_repo)
 
+def get_gmail_service() -> GmailService:
+    """Stateless service wrap Gmail API."""
+    return GmailService()
+
+
+def get_generated_asset_service(
+    asset_repo: GeneratedAssetRepository = Depends(get_generated_asset_repository),
+    gmail_service: GmailService = Depends(get_gmail_service),
+) -> GeneratedAssetService:
+    return GeneratedAssetService(asset_repo, gmail_service)
 
 def get_template_service(
     template_repo: TemplateRepository = Depends(get_template_repository),
