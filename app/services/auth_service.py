@@ -67,3 +67,18 @@ class AuthService:
             access_token=create_access_token(str(user.id), extra={"role": user.role}),
             refresh_token=create_refresh_token(str(user.id)),
         )
+
+    async def get_me_by_token(self, access_token: str) -> Users:
+        """
+        Decode access_token và trả về Users object.
+        Dùng trong login endpoint sau khi set cookie.
+        """
+        try:
+            payload = decode_token(access_token)
+        except JWTError as exc:
+            raise UnauthorizedException("Token không hợp lệ.") from exc
+        user_id = uuid.UUID(str(payload["sub"]))
+        user = await self.user_repo.get_by_id(user_id)
+        if not user:
+            raise NotFoundException("User không tồn tại.")
+        return user

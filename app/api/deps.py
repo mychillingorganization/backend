@@ -9,8 +9,8 @@ Flow:
 """
 
 import uuid
-from typing import AsyncGenerator
-from fastapi import Depends
+from typing import AsyncGenerator, Optional
+from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -21,8 +21,9 @@ from app.models.user import Users
 
 from app.core.database import AsyncSessionFactory
 
-# ── Auth bearer scheme ────────────────────────────────────────────────────────
-bearer_scheme = HTTPBearer()
+# ── Auth bearer scheme ─────────────────────────────────────────────────────
+# auto_error=False: don't throw 403 when no header (cookie fallback)
+bearer_scheme = HTTPBearer(auto_error=False)
 
 # ── Repositories ─────────────────────────────────────────────────────────────
 from app.repositories.user_repository import UserRepository
@@ -198,17 +199,27 @@ def get_auth_service(
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    request: Request,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
     user_repo: UserRepository = Depends(get_user_repository),
 ) -> Users:
+    """
+    Read token in priority order:
+    1. HttpOnly Cookie 'access_token'  ← FE embedded (production)
+    2. Authorization: Bearer header    ← Swagger UI / Postman testing
+    """
+    token: str | None = request.cookies.get("access_token")
+    if not token and credentials:
+        token = credentials.credentials
+    if not token:
+        raise UnauthorizedException("Чуа đăng nhập.")
     try:
-        payload = decode_token(credentials.credentials)
+        payload = decode_token(token)
         if payload.get("type") != "access":
             raise UnauthorizedException("Token không đúng loại.")
         user_id = uuid.UUID(str(payload["sub"]))
     except (JWTError, ValueError, KeyError) as exc:
         raise UnauthorizedException("Token không hợp lệ hoặc đã hết hạn.") from exc
-
     user = await user_repo.get_by_id(user_id)
     if not user:
         raise UnauthorizedException("User không tồn tại.")
