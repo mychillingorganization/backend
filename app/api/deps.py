@@ -145,9 +145,20 @@ def get_event_service(
 
 def get_generated_asset_service(
     asset_repo: GeneratedAssetRepository = Depends(get_generated_asset_repository),
+    log_repo: GenerationLogRepository = Depends(get_generation_log_repository),
+    template_repo: TemplateRepository = Depends(get_template_repository),
+    svg_service: SvgService = Depends(get_svg_service),
+    pdf_service: PdfService = Depends(get_pdf_service),
     gmail_service: GmailService = Depends(get_gmail_service),
 ) -> GeneratedAssetService:
-    return GeneratedAssetService(asset_repo, gmail_service)
+    return GeneratedAssetService(
+        asset_repo=asset_repo,
+        log_repo=log_repo,
+        template_repo=template_repo,
+        svg_service=svg_service,
+        pdf_service=pdf_service,
+        gmail_service=gmail_service,
+    )
 
 def get_template_service(
     template_repo: TemplateRepository = Depends(get_template_repository),
