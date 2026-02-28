@@ -5,3 +5,5 @@ __pycache__/
 credentials/service_account.json
 *.pyc
 .pytest_cache/
+credentials/token.json
+credentials/client_secret.json
