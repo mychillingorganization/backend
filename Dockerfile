@@ -33,10 +33,20 @@ RUN apt-get update && \
 
 WORKDIR /app
 
+# Layer 4: Cài Python dependencies trước (cache layer)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Layer 5: Copy source code BE
 COPY . .
+
+# Layer 6: Copy FE build vào /app/static/
+# ← Build FE trước khi docker build, rồi đặt vào backend/static/
+# Cấu trúc sau khi copy:
+#   /app/static/index.html
+#   /app/static/static/js/main.xxx.js
+#   /app/static/static/css/main.xxx.css
+COPY static/ ./static/
 
 EXPOSE 8000
 
